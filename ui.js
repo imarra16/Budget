@@ -113,16 +113,29 @@ function vueEngagements(){
     <div style="display:flex;justify-content:space-between;align-items:center;margin:0 2px 8px">
       <div class="eyebrow">Paiements récurrents</div>
       <button class="mini" style="background:var(--rec)" onclick="ouvrir('rec')">+ Ajouter</button></div>
-    <div class="carte" style="padding:8px;margin-bottom:22px">`;
+    <div style="margin-bottom:22px">`;
   h+=D.recs.length?D.recs.map(r=>{
-    const paye=r.dernierMois===k.mc;
-    return ligne(SVG.boucle,'#F5ECFE','var(--rec)',r.libelle,'Le '+r.jour+' de chaque mois',
-      `<span style="display:flex;align-items:center;gap:8px">
-        <span style="font-weight:800;opacity:${paye?.35:1}">${eur(r.montant)}</span>
-        ${paye?'<span style="color:var(--in);font-size:11px;font-weight:800">PAYÉ</span>'
-        :`<button class="mini" style="background:#F5ECFE;color:var(--rec)" onclick="payerRec('${r.id}')">Payer</button>`}
-        <button class="corbeille" onclick="supprimer('recs','${r.id}')">${SVG.poubelle}</button></span>`);
-  }).join(''):'<div class="vide">Loyer, abonnements, assurance… ajoute ce qui revient chaque mois.</div>';
+    const fait=r.dernierMois===k.mc, saute=fait&&r.statut==='saute';
+    return `<div class="carte" style="padding:14px">
+      <div style="display:flex;align-items:center;gap:11px">
+        <span class="ico" style="background:#F5ECFE;color:var(--rec)">${SVG.boucle}</span>
+        <div style="flex:1;min-width:0">
+          <div class="nom">${esc(r.libelle)}</div>
+          <div class="det">Le ${r.jour} de chaque mois</div></div>
+        <div style="font-weight:800;font-size:16px;opacity:${fait?.4:1}">${eur(r.montant)}</div></div>
+      <div style="display:flex;gap:8px;margin-top:12px;align-items:center">
+        ${fait?`<div style="flex:1;font-size:13px;font-weight:700;color:${saute?'var(--four)':'var(--in)'}">
+            ${saute?'Sauté ce mois-ci':'Payé ce mois-ci'}</div>
+          <button class="puce" style="padding:8px 12px;font-size:13px;display:flex;gap:5px;align-items:center"
+            onclick="annulerRec('${r.id}')">${SVG.retour} Annuler</button>`
+        :`<button class="mini" style="flex:1;background:var(--rec);padding:9px 0;font-size:14px"
+            onclick="payerRec('${r.id}')">Payer ${eur(r.montant)}</button>
+          <button class="puce" style="padding:9px 12px;font-size:13px;display:flex;gap:5px;align-items:center"
+            onclick="sauterRec('${r.id}')">${SVG.saut} Sauter</button>`}
+        <button class="puce" style="padding:9px 10px" onclick="ouvrir('rec','${r.id}')">${SVG.crayon}</button>
+        <button class="puce" style="padding:9px 10px;color:var(--soft)" onclick="supprimer('recs','${r.id}')">${SVG.poubelle}</button>
+      </div></div>`;
+  }).join(''):'<div class="carte"><div class="vide">Loyer, abonnements, assurance… ajoute ce qui revient chaque mois.</div></div>';
   h+=`</div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin:0 2px 8px">
       <div class="eyebrow">Paiements en plusieurs fois</div>
@@ -136,7 +149,10 @@ function vueEngagements(){
       <div style="display:flex;justify-content:space-between;align-items:flex-start">
         <div><div style="font-weight:700;font-size:16px">${esc(f.libelle)}</div>
         <div class="sous" style="margin-top:2px">${eur(ech)} × ${f.nb} · reste ${eur((f.nb-f.payees)*ech)}</div></div>
-        <button class="corbeille" onclick="supprimer('fours','${f.id}')">${SVG.poubelle}</button></div>
+        <div style="display:flex;gap:8px;flex:0 0 auto">
+          <button class="puce" style="padding:8px 10px" onclick="ouvrir('four','${f.id}')">${SVG.crayon}</button>
+          <button class="puce" style="padding:8px 10px;color:var(--soft)" onclick="supprimer('fours','${f.id}')">${SVG.poubelle}</button>
+        </div></div>
       <div class="tranches">${Array.from({length:f.nb}).map((_,i)=>
         `<div style="${i<f.payees?'background:var(--four)':''}"></div>`).join('')}</div>
       ${fini?'<div style="color:var(--in);font-weight:800;font-size:13px;display:flex;gap:6px;align-items:center">'+SVG.check+' Entièrement remboursé</div>'
@@ -158,7 +174,10 @@ function vueObjectifs(){
       <div style="display:flex;justify-content:space-between;align-items:flex-start">
         <div><div style="font-weight:700;font-size:16px">${esc(g.nom)}</div>
         <div class="sous" style="margin-top:2px">${ok?'Objectif atteint 🎉':'Encore '+eur(Math.max(0,g.cible-g.epargne))}</div></div>
-        <button class="corbeille" onclick="supprimer('goals','${g.id}')">${SVG.poubelle}</button></div>
+        <div style="display:flex;gap:8px;flex:0 0 auto">
+          <button class="puce" style="padding:8px 10px" onclick="ouvrir('goal','${g.id}')">${SVG.crayon}</button>
+          <button class="puce" style="padding:8px 10px;color:var(--soft)" onclick="supprimer('goals','${g.id}')">${SVG.poubelle}</button>
+        </div></div>
       <div style="display:flex;align-items:baseline;gap:6px;margin:12px 0 8px">
         <span style="font-size:24px;font-weight:800;letter-spacing:-.035em;color:${g.couleur}">${eur(g.epargne)}</span>
         <span class="sous">/ ${eur(g.cible)}</span></div>
