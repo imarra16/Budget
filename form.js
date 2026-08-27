@@ -15,10 +15,14 @@ const compteChoisi=()=>{
   const b=document.querySelector('#cpt .cbtn[style*="background"]');
   return b?b.dataset.id:(D.comptes[0]||{}).id;
 };
-let typeOp='out', nbEch=4;
+let typeOp='out', nbEch=4, enCours=null;   /* enCours = id de l'element modifie */
 
-function ouvrir(quoi){
+function ouvrir(quoi,id){
   const f=document.getElementById('feuille');
+  enCours=id||null;
+  const E=enCours?(quoi==='rec'?D.recs:quoi==='four'?D.fours:quoi==='goal'?D.goals:null)
+    ?.find(x=>x.id===enCours):null;
+  const pre=v=>v===undefined||v===null?'':String(v);
   if(quoi==='op'){typeOp='out';
     f.innerHTML=`<div class="tete"><h2>Nouvelle opération</h2><button class="fermer" onclick="fermer()">${SVG.croix}</button></div>
       <div style="display:flex;gap:8px;margin-bottom:16px" id="typ">
@@ -34,26 +38,26 @@ function ouvrir(quoi){
       ${optionsCompte()}
       <button class="btn" style="background:var(--out)" id="ok" onclick="validerOp()">${SVG.check} Enregistrer</button>`;
   }
-  if(quoi==='rec') f.innerHTML=`<div class="tete"><h2>Paiement récurrent</h2><button class="fermer" onclick="fermer()">${SVG.croix}</button></div>
-      <label class="champ"><div class="eyebrow" style="margin-bottom:6px">Nom</div><input id="l" placeholder="Loyer, Netflix, assurance…"></label>
-      <label class="champ"><div class="eyebrow" style="margin-bottom:6px">Montant par mois (€)</div><input id="m" type="number" inputmode="decimal" placeholder="0,00"></label>
-      <label class="champ"><div class="eyebrow" style="margin-bottom:6px">Jour du prélèvement</div><input id="j" type="number" min="1" max="31" value="1"></label>
-      ${optionsCompte()}<button class="btn" style="background:var(--rec)" onclick="validerRec()">${SVG.check} Ajouter</button>`;
-  if(quoi==='four'){nbEch=4;
-    f.innerHTML=`<div class="tete"><h2>Paiement en plusieurs fois</h2><button class="fermer" onclick="fermer()">${SVG.croix}</button></div>
-      <label class="champ"><div class="eyebrow" style="margin-bottom:6px">Achat</div><input id="l" placeholder="Casque, pneus, meuble…"></label>
-      <label class="champ"><div class="eyebrow" style="margin-bottom:6px">Montant total (€)</div><input id="m" type="number" inputmode="decimal" placeholder="0,00"></label>
+  if(quoi==='rec') f.innerHTML=`<div class="tete"><h2>${E?'Modifier le paiement':'Paiement récurrent'}</h2><button class="fermer" onclick="fermer()">${SVG.croix}</button></div>
+      <label class="champ"><div class="eyebrow" style="margin-bottom:6px">Nom</div><input id="l" placeholder="Loyer, Netflix, assurance…" value="${E?esc(E.libelle):''}"></label>
+      <label class="champ"><div class="eyebrow" style="margin-bottom:6px">Montant par mois (€)</div><input id="m" type="number" inputmode="decimal" placeholder="0,00" value="${E?pre(E.montant):''}"></label>
+      <label class="champ"><div class="eyebrow" style="margin-bottom:6px">Jour du prélèvement</div><input id="j" type="number" min="1" max="31" value="${E?pre(E.jour):1}"></label>
+      ${optionsCompte(E?E.compteId:null)}<button class="btn" style="background:var(--rec)" onclick="validerRec()">${SVG.check} ${E?'Enregistrer':'Ajouter'}</button>`;
+  if(quoi==='four'){nbEch=E?E.nb:4;
+    f.innerHTML=`<div class="tete"><h2>${E?'Modifier le paiement':'Paiement en plusieurs fois'}</h2><button class="fermer" onclick="fermer()">${SVG.croix}</button></div>
+      <label class="champ"><div class="eyebrow" style="margin-bottom:6px">Achat</div><input id="l" placeholder="Casque, pneus, meuble…" value="${E?esc(E.libelle):''}"></label>
+      <label class="champ"><div class="eyebrow" style="margin-bottom:6px">Montant total (€)</div><input id="m" type="number" inputmode="decimal" placeholder="0,00" value="${E?pre(E.total):''}"></label>
       <div class="eyebrow" style="margin-bottom:6px">Nombre d'échéances</div>
       <div style="display:flex;gap:8px;margin-bottom:14px" id="ech">${[2,3,4,10,12].map(n=>
-        `<button class="puce nbtn" data-n="${n}" onclick="choisirNb(this)" style="flex:1;padding:10px 0${n===4?';background:var(--four);color:#fff;border-color:var(--four)':''}">${n}x</button>`).join('')}</div>
-      <label class="champ"><div class="eyebrow" style="margin-bottom:6px">Échéances déjà payées</div><input id="p" type="number" min="0" value="0"></label>
-      ${optionsCompte()}<button class="btn" style="background:var(--four)" onclick="validerFour()">${SVG.check} Ajouter</button>`;
+        `<button class="puce nbtn" data-n="${n}" onclick="choisirNb(this)" style="flex:1;padding:10px 0${n===nbEch?';background:var(--four);color:#fff;border-color:var(--four)':''}">${n}x</button>`).join('')}</div>
+      <label class="champ"><div class="eyebrow" style="margin-bottom:6px">Échéances déjà payées</div><input id="p" type="number" min="0" value="${E?pre(E.payees):0}"></label>
+      ${optionsCompte(E?E.compteId:null)}<button class="btn" style="background:var(--four)" onclick="validerFour()">${SVG.check} ${E?'Enregistrer':'Ajouter'}</button>`;
   }
-  if(quoi==='goal') f.innerHTML=`<div class="tete"><h2>Nouvel objectif d'épargne</h2><button class="fermer" onclick="fermer()">${SVG.croix}</button></div>
-      <label class="champ"><div class="eyebrow" style="margin-bottom:6px">Pour quoi ?</div><input id="l" placeholder="Vacances, permis, PS5…"></label>
-      <label class="champ"><div class="eyebrow" style="margin-bottom:6px">Montant à atteindre (€)</div><input id="m" type="number" inputmode="decimal" placeholder="0,00"></label>
-      <label class="champ"><div class="eyebrow" style="margin-bottom:6px">Déjà mis de côté (€)</div><input id="e" type="number" inputmode="decimal" placeholder="0,00"></label>
-      <button class="btn" style="background:var(--goal)" onclick="validerGoal()">${SVG.check} Créer l'objectif</button>`;
+  if(quoi==='goal') f.innerHTML=`<div class="tete"><h2>${E?'Modifier l\'objectif':'Nouvel objectif d\'épargne'}</h2><button class="fermer" onclick="fermer()">${SVG.croix}</button></div>
+      <label class="champ"><div class="eyebrow" style="margin-bottom:6px">Pour quoi ?</div><input id="l" placeholder="Vacances, permis, PS5…" value="${E?esc(E.nom):''}"></label>
+      <label class="champ"><div class="eyebrow" style="margin-bottom:6px">Montant à atteindre (€)</div><input id="m" type="number" inputmode="decimal" placeholder="0,00" value="${E?pre(E.cible):''}"></label>
+      <label class="champ"><div class="eyebrow" style="margin-bottom:6px">Déjà mis de côté (€)</div><input id="e" type="number" inputmode="decimal" placeholder="0,00" value="${E?pre(E.epargne):''}"></label>
+      <button class="btn" style="background:var(--goal)" onclick="validerGoal()">${SVG.check} ${E?'Enregistrer':"Créer l'objectif"}</button>`;
   document.getElementById('voile').classList.add('on');
 }
 function choisirType(b){
@@ -79,19 +83,26 @@ function validerOp(){
 }
 function validerRec(){
   const m=nb(val('m')),l=val('l').trim(); if(m<=0||!l) return;
-  D.recs.push({id:uid(),libelle:l,montant:m,jour:Math.min(31,Math.max(1,parseInt(val('j'))||1)),
-    compteId:compteChoisi(),dernierMois:null});
+  const j=Math.min(31,Math.max(1,parseInt(val('j'))||1)), c=compteChoisi();
+  const e=enCours?D.recs.find(x=>x.id===enCours):null;
+  if(e){ e.libelle=l; e.montant=m; e.jour=j; e.compteId=c; }
+  else D.recs.push({id:uid(),libelle:l,montant:m,jour:j,compteId:c,dernierMois:null,statut:null});
   fermer();maj();
 }
 function validerFour(){
   const t=nb(val('m')),l=val('l').trim(); if(t<=0||!l) return;
-  D.fours.push({id:uid(),libelle:l,total:t,nb:nbEch,
-    payees:Math.min(nbEch,parseInt(val('p'))||0),compteId:compteChoisi(),dernierMois:null});
+  const p=Math.min(nbEch,Math.max(0,parseInt(val('p'))||0)), c=compteChoisi();
+  const e=enCours?D.fours.find(x=>x.id===enCours):null;
+  if(e){ e.libelle=l; e.total=t; e.nb=nbEch; e.payees=p; e.compteId=c;
+         if(p<e.nb&&e.dernierMois===moisCourant()) e.dernierMois=null; }
+  else D.fours.push({id:uid(),libelle:l,total:t,nb:nbEch,payees:p,compteId:c,dernierMois:null});
   fermer();maj();
 }
 function validerGoal(){
   const c=nb(val('m')),l=val('l').trim(); if(c<=0||!l) return;
-  D.goals.push({id:uid(),nom:l,cible:c,epargne:nb(val('e')),couleur:COUL[D.goals.length%6]});
+  const e=enCours?D.goals.find(x=>x.id===enCours):null;
+  if(e){ e.nom=l; e.cible=c; e.epargne=nb(val('e')); }
+  else D.goals.push({id:uid(),nom:l,cible:c,epargne:nb(val('e')),couleur:COUL[D.goals.length%6]});
   fermer();maj();
 }
 
