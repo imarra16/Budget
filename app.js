@@ -6,7 +6,7 @@ const CLE='budget-v1';
 const VIDE={comptes:[
   {id:'c1',nom:'Compte courant',couleur:'#E0348B',soldeInitial:0},
   {id:'c2',nom:'Livret épargne',couleur:'#00B8D9',soldeInitial:0}],
-  ops:[],recs:[],fours:[],goals:[]};
+  ops:[],recs:[],fours:[],goals:[],cats:[]};
 
 /* ------------------------------------------------ outils */
 const eur=n=>new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'}).format(n||0);
@@ -19,6 +19,7 @@ const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'
 const nb=v=>parseFloat(String(v).replace(',','.'))||0;
 
 const SVG={
+  grille:'<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.6"/><rect x="14" y="3" width="7" height="7" rx="1.6"/><rect x="3" y="14" width="7" height="7" rx="1.6"/><rect x="14" y="14" width="7" height="7" rx="1.6"/></svg>',
   crayon:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>',
   saut:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 4 10 8-10 8z"/><path d="M19 5v14"/></svg>',
   retour:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M3.5 13a9 9 0 1 0 2.1-6.4L3 9"/></svg>',
@@ -136,8 +137,11 @@ function exemple(){
      fours:[{id:uid(),libelle:'Casque audio',total:240,nb:4,payees:1,compteId:'c1',dernierMois:null},
             {id:uid(),libelle:'Pneus voiture',total:460,nb:4,payees:2,compteId:'c1',dernierMois:null}],
      goals:[{id:uid(),nom:'Vacances été',cible:900,epargne:350,couleur:'#F5B301'},
-            {id:uid(),nom:'Nouveau vélo',cible:600,epargne:120,couleur:'#12B76A'}]};
+            {id:uid(),nom:'Nouveau vélo',cible:600,epargne:120,couleur:'#12B76A'}],
+     cats:[{id:'k1',nom:'Nourriture',plafond:300,couleur:'#12B76A'},
+           {id:'k2',nom:'Shopping',plafond:150,couleur:'#E0348B'},
+           {id:'k3',nom:'Sorties',plafond:100,couleur:'#7C3AED'}]};
+  D.ops[2].catId='k1'; D.ops[3].catId=null; D.ops[4].catId='k3';
   maj();
 }
 
-  
