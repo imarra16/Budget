@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
+<title>Mon budget</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#E0348B">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAMAAABlApw1AAAAP1BMVEXgNIv///8AAAB8Ou3/ij31swEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADn23fRAAAAEHRSTlP//wD///8AAAAAAAAAAAAAHseB7wAAAlZJREFUeNrt3dFygjAUhOFNAu//yq2d0UIMEGqR8+PupSMz+41ViMQe5a7ohHQ2C9l9h0KR2/cYFLz9pkGA+qsEIeqvEASpv0gQp39bIFD/pkCg+k2CWP2fBYL1fxKI1r8WCNe/EojXfy4QsP9MIGL/qUDI/hPBdQASUyBo/4dA1P53wUUAElZwDYDEFVwCIIEFBgQASGSBAecDhM6RgDQNDZBawQDScgiAtJ5/B7y3/pFvhzfVj0xI/aH3DylICS1I+0PvH0qwWTC4oK9bXEF3saiCHa0I/Xc8m9h/+nxm/98jIr6D9xwD7n87KuYpoP8o0PVCpOsIAwwwwAADDDAg0LUo5fvOHoAMMMCfQgYYYIABBhhggC+GPmxB4JfAAAv8EsRaZX6QIOEBcEGoPzj8nXr8Xgn+bhX+fiH+ji38njn+rkX+vlH+zl3h906Lv3ud//sB4X/B0UlALXF49TcIzJUmdc3MX/A7juM4juM4juM4zmVSHpk9PNwyfWC8ZXF9f9oXX2WWef0pYbznT/WPI5TSFAxDJRjHShDk1kEpTcEwVIJxrARBbt6U0hQMQy2oAVF2ZfYCxrESBAGUZur+34IaEGVjrAEGfDoA/ynEPw/gz8T8ayH+1Sh/PeA4jnNE/I+zDTCADvD8AQNeBXgKigGvAjyL6XSA55GdDvBMvtMB+LGO/MGans16PgA/3pc/YJk/4po/ZJw/5p0gyOuADOv/DMis/g1AZEKrbAYJci8gc/ovACISlormjCAs18wZQFgrmVcTvP024HTDdr3clZDdf/IFf0gocXmZRx8AAAAASUVORK5CYII=">
+<style>
+:root{
+  --ink:#3A1B2C; --soft:#8B6478; --bg:#FDF0F7; --surface:#fff; --line:#F7DCE9;
+  --reste:#E0348B; --in:#12B76A; --out:#C62828; --rec:#9333EA; --four:#FF8A3D; --goal:#F5B301;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden}
+body{
+  background:var(--bg);color:var(--ink);
+  font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
+  font-variant-numeric:tabular-nums;
+  display:flex;flex-direction:column;
+  padding-top:env(safe-area-inset-top);
+}
+#vue{flex:1;overflow-y:auto;padding:18px 16px 100px;-webkit-overflow-scrolling:touch}
+#vue::-webkit-scrollbar{width:0}
+.eyebrow{font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--soft)}
+.titre{font-size:26px;font-weight:800;letter-spacing:-.03em;margin:2px 0 16px}
+.carte{background:var(--surface);border-radius:20px;padding:16px;margin-bottom:10px;
+  box-shadow:0 1px 2px rgba(58,27,44,.07),0 8px 24px -16px rgba(58,27,44,.32)}
+.gros{font-size:46px;font-weight:800;letter-spacing:-.045em;line-height:1.05;margin:4px 0 2px;color:var(--reste)}
+.negatif{color:var(--out)}
+.sous{font-size:13px;color:var(--soft);line-height:1.45}
+.jauge{display:flex;height:16px;border-radius:99px;overflow:hidden;background:var(--bg);gap:2px}
+.jauge>div{transition:width .5s cubic-bezier(.22,1,.36,1)}
+.leg{display:flex;align-items:center;gap:9px;font-size:14px;margin-top:9px}
+.pastille{width:9px;height:9px;border-radius:3px;flex:0 0 auto}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.chiffre{font-size:21px;font-weight:800;letter-spacing:-.03em;margin:6px 0 1px}
+.ligne{display:flex;align-items:center;gap:11px;padding:10px 8px}
+.ligne .txt{flex:1;min-width:0}
+.ligne .nom{font-weight:650;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ligne .det{font-size:12.5px;color:var(--soft);margin-top:1px}
+.ico{border-radius:10px;padding:7px;line-height:0;flex:0 0 auto}
+.vide{text-align:center;padding:26px 10px;color:var(--soft);font-size:14px;line-height:1.5}
+button{font-family:inherit;cursor:pointer;transition:transform .12s ease,filter .12s ease}
+button:active{transform:scale(.97);filter:brightness(.94)}
+button:focus-visible{outline:2.5px solid var(--reste);outline-offset:2px}
+.btn{border:none;color:#fff;font-weight:700;font-size:15px;padding:13px 18px;border-radius:14px;
+  width:100%;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--reste)}
+.btn.creux{background:transparent;border:1.5px solid var(--reste);color:var(--reste)}
+.mini{border:none;color:#fff;border-radius:9px;padding:5px 10px;font-size:12px;font-weight:700}
+.puce{border:1.5px solid var(--line);background:#FFF9FC;border-radius:11px;padding:9px 13px;
+  font-size:14px;font-weight:700;color:var(--ink)}
+.corbeille{border:none;background:none;padding:2px;line-height:0;color:var(--line)}
+.champ{display:block;margin-bottom:12px}
+.champ input{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;
+  font-size:16px;color:var(--ink);font-family:inherit;background:#FFF9FC;outline:none}
+.champ input:focus{border-color:var(--reste)}
+.barreobj{height:12px;background:#FBE3EE;border-radius:99px;overflow:hidden}
+.barreobj>div{height:100%;border-radius:99px;transition:width .5s cubic-bezier(.22,1,.36,1)}
+.tranches{display:flex;gap:5px;margin:14px 0 12px}
+.tranches>div{flex:1;height:9px;border-radius:99px;background:#FBE3EE;transition:background .3s}
+#graph{display:flex;align-items:flex-end;gap:8px;height:120px;margin-top:12px}
+#graph .col{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;height:100%}
+#graph .paire{flex:1;display:flex;align-items:flex-end;gap:3px;width:100%;justify-content:center}
+#graph .paire i{width:42%;border-radius:5px 5px 0 0;min-height:2px;transition:height .5s cubic-bezier(.22,1,.36,1)}
+#graph .m{font-size:11px;color:var(--soft)}
+#plus{position:fixed;right:18px;bottom:calc(88px + env(safe-area-inset-bottom));width:58px;height:58px;
+  border-radius:20px;background:var(--reste);border:none;color:#fff;z-index:20;
+  box-shadow:0 10px 24px -8px rgba(224,52,139,.75);display:grid;place-items:center}
+nav{background:var(--surface);border-top:1px solid var(--line);display:flex;
+  padding:8px 4px calc(12px + env(safe-area-inset-bottom));z-index:30}
+nav button{flex:1;border:none;background:none;padding:6px 0;display:flex;flex-direction:column;
+  align-items:center;gap:4px;color:var(--soft);font-size:11px;font-weight:600}
+nav button.on{color:var(--reste);font-weight:800}
+#voile{position:fixed;inset:0;background:rgba(58,27,44,.45);display:none;align-items:flex-end;z-index:50}
+#voile.on{display:flex}
+#feuille{background:#fff;width:100%;border-radius:26px 26px 0 0;padding:18px 18px calc(26px + env(safe-area-inset-bottom));
+  max-height:88vh;overflow-y:auto;animation:up .26s cubic-bezier(.22,1,.36,1)}
+@keyframes up{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.tete{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.tete h2{margin:0;font-size:19px;font-weight:800;letter-spacing:-.02em}
+.fermer{border:none;background:var(--bg);border-radius:10px;padding:7px;line-height:0;color:var(--soft)}
+.fade{animation:f .22s ease}
+@keyframes f{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.alerte{margin-top:14px;background:#FDEAEA;color:var(--out);border-radius:12px;padding:10px 12px;
+  font-size:13px;font-weight:600;line-height:1.4}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div id="vue"></div>
+<button id="plus" aria-label="Ajouter une opération" onclick="ouvrir('op')">
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+</button>
+
+<nav id="nav"></nav>
+
+<div id="voile" onclick="if(event.target===this)fermer()"><div id="feuille"></div></div>
+
+<script src="app.js"></script>
+<script src="ui.js"></script>
+<script src="form.js"></script>
+
+</body>
+</html>
