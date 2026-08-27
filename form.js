@@ -20,7 +20,7 @@ let typeOp='out', nbEch=4, enCours=null;   /* enCours = id de l'element modifie 
 function ouvrir(quoi,id){
   const f=document.getElementById('feuille');
   enCours=id||null;
-  const E=enCours?(quoi==='rec'?D.recs:quoi==='four'?D.fours:quoi==='goal'?D.goals:null)
+  const E=enCours?(quoi==='rec'?D.recs:quoi==='four'?D.fours:quoi==='goal'?D.goals:quoi==='cat'?D.cats:null)
     ?.find(x=>x.id===enCours):null;
   const pre=v=>v===undefined||v===null?'':String(v);
   if(quoi==='op'){typeOp='out';
@@ -36,6 +36,7 @@ function ouvrir(quoi,id){
       <label class="champ"><div class="eyebrow" style="margin-bottom:6px">Date</div>
         <input id="d" type="date" value="${auj()}"></label>
       ${optionsCompte()}
+      ${optionsCat()}
       <button class="btn" style="background:var(--out)" id="ok" onclick="validerOp()">${SVG.check} Enregistrer</button>`;
   }
   if(quoi==='rec') f.innerHTML=`<div class="tete"><h2>${E?'Modifier le paiement':'Paiement récurrent'}</h2><button class="fermer" onclick="fermer()">${SVG.croix}</button></div>
@@ -58,6 +59,7 @@ function ouvrir(quoi,id){
       <label class="champ"><div class="eyebrow" style="margin-bottom:6px">Montant à atteindre (€)</div><input id="m" type="number" inputmode="decimal" placeholder="0,00" value="${E?pre(E.cible):''}"></label>
       <label class="champ"><div class="eyebrow" style="margin-bottom:6px">Déjà mis de côté (€)</div><input id="e" type="number" inputmode="decimal" placeholder="0,00" value="${E?pre(E.epargne):''}"></label>
       <button class="btn" style="background:var(--goal)" onclick="validerGoal()">${SVG.check} ${E?'Enregistrer':"Créer l'objectif"}</button>`;
+  if(quoi==='cat') f.innerHTML=feuilleCat(E);
   document.getElementById('voile').classList.add('on');
 }
 function choisirType(b){
@@ -66,6 +68,8 @@ function choisirType(b){
   const c=typeOp==='in'?'var(--in)':'var(--out)';
   b.style.cssText=`flex:1;padding:12px 0;font-size:15px;background:${c};color:#fff;border-color:${c}`;
   document.getElementById('ok').style.background=c;
+  const bloc=document.getElementById('catbloc');
+  if(bloc) bloc.style.display = typeOp==='out' ? 'block' : 'none';
 }
 function choisirNb(b){
   nbEch=+b.dataset.n;
@@ -78,7 +82,8 @@ function validerOp(){
   const m=nb(val('m')); if(m<=0) return;
   D.ops.unshift({id:uid(),type:typeOp,montant:m,
     libelle:val('l').trim()||(typeOp==='in'?'Entrée':'Dépense'),
-    compteId:compteChoisi(),date:val('d')||auj()});
+    compteId:compteChoisi(),date:val('d')||auj(),
+    catId:typeOp==='out'?catChoisie():null});
   fermer();maj();
 }
 function validerRec(){
