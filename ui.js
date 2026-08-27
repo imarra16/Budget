@@ -193,11 +193,13 @@ function vueObjectifs(){
 }
 
 function rendre(){
-  const v={accueil:vueAccueil,comptes:vueComptes,engagements:vueEngagements,objectifs:vueObjectifs}[tab];
+  const v={accueil:vueAccueil,comptes:vueComptes,engagements:vueEngagements,
+           budgets:vueBudgets,objectifs:vueObjectifs}[tab];
   document.getElementById('vue').innerHTML=v();
   document.getElementById('nav').innerHTML=[
     ['accueil','Accueil',SVG.maison],['comptes','Comptes',SVG.portefeuille],
-    ['engagements','À payer',SVG.boucleNav],['objectifs','Épargne',SVG.cible]
+    ['engagements','À payer',SVG.boucleNav],['budgets','Budgets',SVG.grille],
+    ['objectifs','Épargne',SVG.cible]
   ].map(([id,l,i])=>`<button class="${tab===id?'on':''}" onclick="allerA('${id}')">${i}<span>${l}</span></button>`).join('');
 }
 
