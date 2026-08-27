@@ -1,6 +1,6 @@
 /* version du cache : a incrementer a chaque mise a jour */
-const C = 'budget-v4';
-const FICHIERS = ['./', './index.html', './manifest.json', './app.js', './ui.js', './form.js'];
+const C = 'budget-v5';
+const FICHIERS = ['./', './index.html', './manifest.json', './app.js', './ui.js', './cat.js', './form.js'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(C).then(c => c.addAll(FICHIERS)).then(() => self.skipWaiting()));
